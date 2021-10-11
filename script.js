@@ -81,8 +81,6 @@ const updateTime = (time, update = false) => {
 //--> Updating Time Event Listener
 audio.addEventListener("timeupdate", () => {
   let time = Math.floor(audio.currentTime.toFixed(2));
-  // console.log("current", audio.currentTime);
-  // console.log(time);
   updateTime(time);
   updateProgress();
 });
@@ -110,7 +108,6 @@ const changeTrack = (track) => {
 
 // Song has ended
 audio.addEventListener("ended", () => {
-  // playPause.classList.replace("fa-pause", "fa-play");
   num++;
   changeTrack(num);
   audio.play();
@@ -128,33 +125,29 @@ next.addEventListener("click", () => {
   changeTrack(num);
 });
 
-// Seeking/Dragging
-
 // loading on start
 const loadMusic = () => {
+  let { song, artist, duration } = songs[0];
   img.src = "./img/img-1.jpg";
   audio.src = "./music/music-1.mp3";
-  title.textContent = `${songs[0].song}`;
-  artist.textContent = `${songs[0].artist}`;
-  stop.textContent = `${songs[0].duration}`;
+  title.textContent = `${song}`;
+  artist.textContent = `${artist}`;
+  stop.textContent = `${duration}`;
 };
 
-loadMusic();
-// console.log(audio.duration);
-
+// Changing progress for the player / seeking
 progressContainer.addEventListener("click", (e) => {
-  let x = e.pageX;
-  let bodyWidth = document.body.offsetWidth;
-  let progressContainerWidth = progressContainer.offsetWidth;
-  let containerWidth = container.offsetWidth;
-  let extraSpace = (container.clientWidth - progressContainerWidth) / 2;
-  let locationStart = (bodyWidth - containerWidth) / 2 + extraSpace;
-  let seekX = ((x - locationStart) / progressContainerWidth) * 100;
-  progress.style.width = `${seekX}%`;
+  let width = e.offsetX;
+  let totalWidth = e.target.clientWidth;
+  let percentage = (width / totalWidth) * 100;
+  progress.style.width = `${percentage}%`;
 
-  // console.log(seekX);
-
-  let newTime = parseInt((seekX / 100) * Math.floor(audio.duration.toFixed(2)));
-  // console.log(newTime);
+  // Changing time according to the percentage
+  let newTime = parseInt(
+    (percentage / 100) * Math.floor(audio.duration.toFixed(2))
+  );
   updateTime(newTime, true);
 });
+
+// on Load
+loadMusic();
